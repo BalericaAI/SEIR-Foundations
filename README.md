@@ -3,11 +3,11 @@ Systems Engineering and Infrastructure Integration
 
 Applied Cloud & Platform Engineering
 
-A 2-Year Applied Program in Cloud, Automation, and Operational Judgment
+A 1-Year Applied Program in Cloud, Automation, and Operational Judgment
 
 ## What This Program Is
 
-Applied Cloud & Platform Engineering is a 2-year, hands-on program designed to teach how real computing systems are built, automated, secured, and operated in the real world. This is not a bootcamp or a certification class. The program focuses on long-term skill development, practical responsibility, and learning how to think clearly when systems fail.
+Applied Cloud & Platform Engineering is a 1-year, hands-on program designed to teach how real computing systems are built, automated, secured, and operated in the real world. This is not a bootcamp or a certification class. The program focuses on long-term skill development, practical responsibility, and learning how to think clearly when systems fail.
 
 Students work with real infrastructure, real constraints, and real consequences. Throughout the program they build cloud environments, automate deployments, troubleshoot failures, manage access controls, and develop the judgment required to operate production systems responsibly.
 
