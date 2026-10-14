@@ -1,7 +1,7 @@
 #!/bin/bash
 # SEIR Foundations - Amazon Linux 2023 EC2 User Data
 # Paste this entire file into EC2 > Advanced details > User data.
-set -u
+# set -u
 
 cat > /usr/local/bin/seir-dashboard <<'DASH'
 #!/bin/bash
