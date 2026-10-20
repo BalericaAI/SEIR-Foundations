@@ -443,6 +443,8 @@ After starting Balerica AI, you can open:
 http://EC2-IP:8000/docs
 ```
 
+A recorded walkthrough of the homepage and this console is [balerica-api-console-walkthrough.mp4](balerica-api-console-walkthrough.mp4).
+
 FastAPI will display the available endpoints.
 
 For example:
