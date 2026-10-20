@@ -253,9 +253,18 @@ def agents():
 
     discovered = ask.discover_agents()
 
+    catalog = []
+
+    for agent in discovered:
+
+        catalog.append({
+            "name": agent.NAME,
+            "description": getattr(agent, "DESCRIPTION", ""),
+        })
+
     return {
-        "count": len(discovered),
-        "agents": discovered
+        "count": len(catalog),
+        "agents": catalog
     }
 
 # ============================================================
