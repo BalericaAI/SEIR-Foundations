@@ -55,8 +55,6 @@ seir-foundations-homework/
         └── screenshots/
             ├── Maarek_Section5_quiz.jpg
             ├── Maarek_Section6_quiz.jpg
-            ├── Maarek_Section7_quiz.jpg
-            ├── Maarek_Section8_quiz.jpg
             ├── BAM_1.1.jpg      (extra credit)
             ├── BAM_1.2.jpg      (extra credit)
             └── BAM_1.3.jpg      (extra credit)
@@ -108,8 +106,6 @@ Days + Times when your team meets = Mon & Wed, 7:00–8:30 PM ET
 | Section 3 | **No quiz** for this section — no screenshot needed                                    |
 | Section 5 | Screenshot of the **completed Section 5 quiz**, uploaded as `Maarek_Section5_quiz.jpg` |
 | Section 6 | Screenshot of the **completed Section 6 quiz**, uploaded as `Maarek_Section6_quiz.jpg` |
-| Section 7 | Screenshot of the **completed Section 7 quiz**, uploaded as `Maarek_Section7_quiz.jpg` |
-| Section 8 | Screenshot of the **completed Section 8 quiz**, uploaded as `Maarek_Section8_quiz.jpg` |
 
 ### YouTube
 
@@ -179,7 +175,7 @@ cat <file name>
 - [ ] My homework repo follows Theo's format and naming convention, and my earlier homework has been moved into it.
 - [ ] I completed the Bahga, SAA Exam Guide, and AWS Developer readings.
 - [ ] I watched Maarek Section 3 (no quiz).
-- [ ] I completed the Maarek Section 5, 6, 7, and 8 quizzes and uploaded `Maarek_Section5_quiz.jpg`, `Maarek_Section6_quiz.jpg`, `Maarek_Section7_quiz.jpg`, and `Maarek_Section8_quiz.jpg`.
+- [ ] I completed the Maarek Section 5 and 6 quizzes and uploaded `Maarek_Section5_quiz.jpg` and `Maarek_Section6_quiz.jpg`.
 - [ ] I watched the EC2 and Git YouTube videos.
 - [ ] I committed and pushed everything to my GitHub repository by **Tuesday, October 27, 2026, 12:00 PM Central Time**.
 
@@ -189,4 +185,4 @@ cat <file name>
 - [ ] `BAM_1.3.jpg` — `user_data` script displayed over local SSH.
 - [ ] I terminated unused EC2 instances and checked for leftover billable resources.
 
-> **Chewbacca's final assessment:** RRRRAAAWWWRRR! A clean repo, a team, a stack of reading, four quizzes, and an SSH session from your own keyboard. That's how cloud careers start.
+> **Chewbacca's final assessment:** RRRRAAAWWWRRR! A clean repo, a team, a stack of reading, two quizzes, and an SSH session from your own keyboard. That's how cloud careers start.
