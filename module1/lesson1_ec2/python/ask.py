@@ -22,7 +22,9 @@ Responsibilities
 =========================================================
 """
 
+import contextlib
 import importlib
+import io
 import os
 
 from banner import show_banner, show_footer
@@ -180,6 +182,92 @@ def route_question(question, agents):
                 return agent
 
     return None
+
+
+# ---------------------------------------------------------
+# API entry points
+#
+# app.py calls these instead of the interactive console.
+#
+# run() reuses the same audit and router as main().
+# run_agent() executes one discovered agent by name.
+# ---------------------------------------------------------
+
+def _execute_agent(agent, question):
+
+    buffer = io.StringIO()
+
+    with contextlib.redirect_stdout(buffer):
+
+        returned = agent.run(question)
+
+    if returned is not None:
+
+        return returned
+
+    return buffer.getvalue().strip()
+
+
+def _match_agent(agent_name, agents):
+
+    needle = agent_name.strip().lower()
+
+    for agent in agents:
+
+        display = getattr(agent, "NAME", "")
+
+        names = {
+            getattr(agent, "__name__", "").lower(),
+            display.lower(),
+            display.lower().replace(" ", ""),
+        }
+
+        if needle in names or (needle and needle in display.lower()):
+
+            return agent
+
+    return None
+
+
+def run_agent(agent_name):
+
+    agents = discover_agents()
+
+    selected = _match_agent(agent_name, agents)
+
+    if selected is None:
+
+        installed = ", ".join(
+            agent.NAME for agent in agents
+        ) or "none"
+
+        raise ValueError(
+            f"Agent not found: {agent_name}. Installed: {installed}"
+        )
+
+    return _execute_agent(selected, None)
+
+
+def run(question):
+
+    approved, message = audit_request(question)
+
+    if not approved:
+
+        return message
+
+    agents = discover_agents()
+
+    selected = route_question(question, agents)
+
+    if selected is None:
+
+        return (
+            "No agent selected automatically. "
+            "Choose an installed agent by name."
+        )
+
+    return _execute_agent(selected, question)
 
 
 # ---------------------------------------------------------

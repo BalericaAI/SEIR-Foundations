@@ -2,14 +2,38 @@
 
 set -e
 
+# ======================================
+#  BALERICA LEGACY BANK INSTALLER
+# ======================================
+#
+# Builds the full lab on Amazon Linux 2023:
+#
+#   FastAPI  (modern edge)
+#   GnuCOBOL (legacy core)
+#   SQLite   (system of record)
+#
+# Run it from the repo:
+#
+#   bash module1/lesson1_ec2/API/install/install.sh
+#
+# ======================================
+
+# The repo directory this script lives in (install/..)
+SRC_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+BANK_HOME="/opt/balerica-bank"
+
 echo "======================================"
 echo " BALERICA LEGACY BANK INSTALLER"
 echo "======================================"
+echo
+echo "Source : $SRC_DIR"
+echo "Target : $BANK_HOME"
+echo
 
-echo "[1/8] Updating packages..."
+echo "[1/9] Updating packages..."
 sudo dnf update -y
 
-echo "[2/8] Installing dependencies..."
+echo "[2/9] Installing dependencies..."
 sudo dnf install -y \
     python3 \
     python3-pip \
@@ -18,25 +42,31 @@ sudo dnf install -y \
     make \
     gnucobol
 
-echo "[3/8] Creating directories..."
-sudo mkdir -p /opt/balerica-bank/{app,cobol/bin,data,logs,agents}
+echo "[3/9] Creating directories..."
+sudo mkdir -p $BANK_HOME/{app,cobol/bin,data,logs,agents,swift}
 
-sudo chown -R $USER:$USER /opt/balerica-bank
+sudo chown -R $USER:$USER $BANK_HOME
 
-cd /opt/balerica-bank
+echo "[4/9] Copying Balerica Bank sources..."
+cp "$SRC_DIR"/app/*.py        $BANK_HOME/app/
+cp "$SRC_DIR"/cobol/*.cob     $BANK_HOME/cobol/
+cp "$SRC_DIR"/agents/*.py     $BANK_HOME/agents/
+cp "$SRC_DIR"/swift/*.py      $BANK_HOME/swift/
 
-echo "[4/8] Creating Python virtual environment..."
+cd $BANK_HOME
+
+echo "[5/9] Creating Python virtual environment..."
 python3 -m venv venv
 source venv/bin/activate
 
-echo "[5/8] Installing Python packages..."
+echo "[6/9] Installing Python packages..."
 pip install \
     fastapi \
     uvicorn \
     boto3 \
     python-dotenv
 
-echo "[6/8] Creating database..."
+echo "[7/9] Creating database..."
 
 sqlite3 data/bank.db <<'SQL'
 
@@ -90,7 +120,7 @@ VALUES
 
 SQL
 
-echo "[7/8] Compiling COBOL programs..."
+echo "[8/9] Compiling COBOL programs..."
 
 cobc -x \
     -o cobol/bin/account_lookup \
@@ -100,11 +130,37 @@ cobc -x \
     -o cobol/bin/payment_post \
     cobol/payment_post.cob
 
-echo "[8/8] Installation complete."
+# OPEN EXTEND cannot create the journal; an empty file can.
+touch data/payments.dat
+
+echo "[9/9] Exporting the ledger for the COBOL core..."
+
+# COBOL reads fixed-width records, not SQLite.
+# The bridge module writes data/accounts.dat.
+python3 -c "
+import sys
+sys.path.insert(0, 'app')
+import cobol_bridge
+count = cobol_bridge.export_accounts()
+print(f'  exported {count} account(s) to data/accounts.dat')
+"
 
 echo
-echo "Next step:"
+echo "Installation complete."
 echo
-echo "cd /opt/balerica-bank"
-echo "./cobol/bin/account_lookup 100001"
+echo "Smoke-test the COBOL core:"
+echo
+echo "  cd $BANK_HOME"
+echo "  ./cobol/bin/account_lookup 100001"
+echo "  ./cobol/bin/payment_post TXN0001 100001 125.50 USD INV-1001"
+echo
+echo "Start the bank API:"
+echo
+echo "  cd $BANK_HOME"
+echo "  source venv/bin/activate"
+echo "  uvicorn app.main:app --host 0.0.0.0 --port 8000"
+echo
+echo "Then prove connectivity with SWIFT traffic:"
+echo
+echo "  python3 swift/traffic_generator.py --count 10"
 echo
