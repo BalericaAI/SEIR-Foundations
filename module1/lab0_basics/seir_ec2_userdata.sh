@@ -1,10 +1,7 @@
 #!/bin/bash
 # SEIR Foundations - Amazon Linux 2023 EC2 User Data
-# Combined SSH/dashboard + HTTP web server configuration
-# Paste this entire file into:
-# EC2 > Advanced details > User data
-
-set -u
+# Paste this entire file into EC2 > Advanced details > User data.
+# set -u
 
 ###############################################################################
 # PART 1 — SEIR FOUNDATIONS SSH DASHBOARD
