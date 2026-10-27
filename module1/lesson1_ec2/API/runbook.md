@@ -347,6 +347,11 @@ do not close it. The bank is open.
 
 ---
 
+<img width="1603" height="1017" alt="balericalegacybank" src="https://github.com/user-attachments/assets/c8e53112-ddd3-485e-ae4b-ea6beb7f5424" />
+
+
+
+
 ## Step 5 — Open a second terminal
 
 You need a second window to talk to your bank. Open a **new**
