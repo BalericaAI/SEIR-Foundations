@@ -495,6 +495,29 @@ model (Model Access), then set `BEDROCK_MODEL_ID` before starting
 uvicorn. Newer Claude models need the *inference profile* id
 (it starts with `us.`), not the base model id.
 
+### Why `/ask` might silently stay offline
+
+The fallback to `offline-knowledge-base` is silent — no error, no
+stack trace in the `curl` output. It hides three separate
+requirements, and **all three** must be true before Bedrock will
+ever answer:
+
+1. **An IAM role is attached to the instance**, with permission
+   to call Bedrock. See `iam/PERMISSIONS.md` in this folder for
+   the exact policy and the AWS CLI commands to create and attach
+   it (instructor action — role creation needs IAM admin rights).
+2. **`AWS_REGION` matches wherever you enabled model access.**
+   The code defaults to `us-east-1` if `AWS_REGION` isn't set.
+   Enabling Claude in a different region's Bedrock console but
+   leaving `AWS_REGION` unset (or set to something else) means
+   the SDK calls the wrong region and never finds it.
+3. **`BEDROCK_MODEL_ID` is a real model/inference-profile ID**,
+   not the shipped placeholder (see the Student Challenge above).
+
+Any one of these being wrong looks identical from the outside:
+`"source": "offline-knowledge-base"`. Check all three, in order,
+before assuming something else is broken.
+
 ---
 
 ## Step 9 — Closing time
@@ -569,7 +592,7 @@ Columns 57-59  currency         PIC X(3)
 | generator prints UNREACHABLE              | the server is not running in Window 1 — redo Step 4            |
 | `/docs` never loads in the browser        | Security Group — open port 8000 (see Step 7)                   |
 | every payment REJECTED                    | read the `REASON=` — the core always explains itself           |
-| `/ask` says `offline-knowledge-base`      | no Bedrock access yet — expected early in the lab              |
+| `/ask` says `offline-knowledge-base`      | expected early in the lab; if you've done the Student Challenge and it's still happening, check all three Bedrock requirements in "Why `/ask` might silently stay offline" above (IAM role, `AWS_REGION`, `BEDROCK_MODEL_ID`) — getting any one wrong looks identical |
 
 Only after checking all of the above are you permitted to blame
 AWS.
