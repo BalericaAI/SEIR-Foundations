@@ -40,7 +40,40 @@ sudo dnf install -y \
     sqlite \
     gcc \
     make \
-    gnucobol
+    autoconf \
+    automake \
+    libtool \
+    flex \
+    bison \
+    gmp-devel \
+    ncurses-devel \
+    tar \
+    gzip
+
+# Amazon Linux 2023's dnf repos do not package gnucobol, and
+# AL2023 does not support EPEL the way older Amazon Linux/RHEL
+# did, so GnuCOBOL is built from source here instead.
+# --without-db skips Berkeley DB / ISAM support, which this lab
+# does not need (account_lookup/payment_post only use
+# LINE SEQUENTIAL files).
+if ! command -v cobc >/dev/null 2>&1; then
+    echo "  gnucobol is not packaged for AL2023 - building GnuCOBOL 3.2 from source..."
+    GNUCOBOL_TMP="$(mktemp -d)"
+    curl -fsSL -o "$GNUCOBOL_TMP/gnucobol.tar.gz" \
+        "https://sourceforge.net/projects/gnucobol/files/gnucobol/3.2/gnucobol-3.2.tar.gz/download"
+    tar xzf "$GNUCOBOL_TMP/gnucobol.tar.gz" -C "$GNUCOBOL_TMP"
+    (
+        cd "$GNUCOBOL_TMP/gnucobol-3.2"
+        ./configure --prefix=/usr/local --without-db
+        make -j"$(nproc)"
+        sudo make install
+    )
+    echo /usr/local/lib | sudo tee /etc/ld.so.conf.d/gnucobol.conf > /dev/null
+    sudo ldconfig
+    rm -rf "$GNUCOBOL_TMP"
+else
+    echo "  GnuCOBOL already installed, skipping build."
+fi
 
 echo "[3/9] Creating directories..."
 sudo mkdir -p $BANK_HOME/{app,cobol/bin,data,logs,agents,swift}

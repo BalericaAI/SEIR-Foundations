@@ -14,10 +14,10 @@ You connect to the EC2 instance:
 ssh ...
 ```
 
-Move into the agents directory:
+Move into the python directory:
 
 ```bash
-cd agents
+cd module1/lesson1_ec2/python
 ```
 
 And execute Balerica AI:
@@ -443,7 +443,7 @@ After starting Balerica AI, you can open:
 http://EC2-IP:8000/docs
 ```
 
-A recorded walkthrough of the homepage and this console is [balerica-api-console-walkthrough.mp4](balerica-api-console-walkthrough.mp4).
+A recorded walkthrough of the homepage and this console is [balerica-api-console-walkthrough.mp4](../API/balerica-api-console-walkthrough.mp4).
 
 FastAPI will display the available endpoints.
 
