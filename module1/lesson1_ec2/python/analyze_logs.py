@@ -28,6 +28,21 @@ from bedrock import invoke_bedrock
 
 
 # ---------------------------------------------------------
+# Agent contract
+#
+# ask.py's discover_agents() only registers a module as an
+# agent if AGENT is True. Without this, analyze_logs.py is a
+# working standalone script that ask.py and app.py can
+# never find or route to.
+# ---------------------------------------------------------
+
+AGENT = True
+NAME = "Log Analysis Agent"
+DESCRIPTION = "Collect Linux logs and generate a Bedrock operational report."
+VERSION = "1.0"
+
+
+# ---------------------------------------------------------
 # Chewbacca says:
 #
 # "Rrrrrrrraaaagh..."
@@ -178,6 +193,12 @@ def main():
 # ---------------------------------------------------------
 # Program Entry
 # ---------------------------------------------------------
+
+def run(question=None):
+    """Agent entry point used by ask.py."""
+
+    return main()
+
 
 if __name__ == "__main__":
 

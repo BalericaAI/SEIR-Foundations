@@ -49,6 +49,21 @@ bedrock = boto3.client(
 
 
 # ---------------------------------------------------------
+# Agent contract
+#
+# ask.py's discover_agents() only registers a module as an
+# agent if AGENT is True. Without this, health.py is a
+# working standalone script that ask.py and app.py can
+# never find or route to.
+# ---------------------------------------------------------
+
+AGENT = True
+NAME = "EC2 Health Analyzer"
+DESCRIPTION = "Collect Linux telemetry and generate a Bedrock health assessment."
+VERSION = "1.0"
+
+
+# ---------------------------------------------------------
 # Chewbacca says:
 #
 # "RRRRAAAAAAAGH!"
@@ -245,6 +260,12 @@ def main():
         print("\nTechnical Details:\n")
 
         print(ex)
+
+
+def run(question=None):
+    """Agent entry point used by ask.py."""
+
+    return main()
 
 
 if __name__ == "__main__":
