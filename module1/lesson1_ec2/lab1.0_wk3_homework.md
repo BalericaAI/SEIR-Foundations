@@ -52,6 +52,7 @@ seir-foundations-homework/
         ├── README.md                      (your evidence tables — Sections 3 and 9)
         ├── lab1_notes.md                  (your personal notes)
         ├── ai_review_YourNameHere.txt
+        ├── ai_review_transcript_YourNameHere.txt   (only if you did not use a share link)
         ├── spotter_YourNameHere.txt
         ├── AI_enabled_study_lab1.0.txt
         └── screenshots/
@@ -84,15 +85,19 @@ One run = **one brand-new EC2 instance** taken from launch through **Step 4** of
 - Instances built from a baked launch template or a golden AMI (BAM_2.2 / BAM_2.3) **do not count** toward the seven. The point is to do the steps yourself.
 - When the run is done: `Ctrl+C` the server, **terminate the instance**, and check **EC2 → Volumes** and **Elastic IPs** for leftovers. **Keep your launch template.**
 
-### 3.2 What the screenshot must show
+### 3.2 What the screenshot must show — the ID line
 
-Right **before** you start uvicorn in Step 4, run `whoami` and the date **in your own time zone**. Amazon Linux shows UTC by default, so set the zone for that one command:
+Right **before** you start uvicorn in Step 4, run the **ID line**. It proves who you are, when you ran it (in your own time zone), which instance you are on, and when that instance booted:
 
 ```bash
-whoami && TZ='America/Chicago' date
+whoami && TZ='America/Chicago' date && ec2-metadata -i && uptime -s
 ```
 
-Use your own zone: `America/New_York`, `America/Chicago`, `America/Denver`, `America/Los_Angeles`, `Europe/London`, etc.
+- Use your own zone: `America/New_York`, `America/Chicago`, `America/Denver`, `America/Los_Angeles`, `Europe/London`, etc. (Amazon Linux shows UTC by default.)
+- `ec2-metadata -i` prints the **Instance ID**. If the command is missing, run `sudo dnf install -y ec2-utils` first.
+- `uptime -s` prints when the instance **booted** (in UTC).
+
+**Every screenshot in this homework must include the ID line** — lab runs, COBOL practice, git clone, and BAM.
 
 Then start the server:
 
@@ -102,9 +107,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 Take the screenshot when you see `Application startup complete.` It must show, in one image:
 
-1. `ec2-user` (from `whoami`)
-2. The local date and time (from `date`)
-3. The uvicorn startup lines, including `Application startup complete.`
+1. The full ID line output: `ec2-user`, the local date and time, the Instance ID, and the boot time
+2. The uvicorn startup lines, including `Application startup complete.`
 
 Save as `screenshots/lab1_run1.jpg` through `screenshots/lab1_run7.jpg`.
 
@@ -115,7 +119,10 @@ Save as `screenshots/lab1_run1.jpg` through `screenshots/lab1_run7.jpg`.
 | 1–3 lab-run screenshots on the same local date | OK |
 | **4 or more** lab-run screenshots on the same local date | **Automatic failure** for the week |
 | The date in the screenshot does not match the date in your table | That run does not count |
+| The Instance ID in the screenshot does not match the Instance ID in your table | That run does not count |
+| The boot time is after the screenshot time, or more than 24 hours before it | That run does not count |
 | Two runs share the same Public DNS / Instance ID | Only one of them counts |
+| Your Instance ID appears in another student's submission | Both submissions are reviewed by Theo |
 
 The daily limit applies **only** to the seven `lab1_run` screenshots. COBOL practice, git clone, quiz, and BAM screenshots do not count toward it.
 
@@ -123,25 +130,27 @@ The daily limit applies **only** to the seven `lab1_run` screenshots. COBOL prac
 
 Find the **Public IPv4 DNS** and **Instance ID** in **EC2 → Instances → (your instance) → Details**.
 
-| Run | Date (local) | Time zone | Instance ID | Public IPv4 DNS | Screenshot | Terminated? |
-|-----|--------------|-----------|-------------|-----------------|------------|-------------|
-| 1 | 2026-10-29 | America/Chicago | i-0abc123example | ec2-3-91-0-1.compute-1.amazonaws.com | `screenshots/lab1_run1.jpg` | Yes |
-| 2 | | | | | `screenshots/lab1_run2.jpg` | |
-| 3 | | | | | `screenshots/lab1_run3.jpg` | |
-| 4 | | | | | `screenshots/lab1_run4.jpg` | |
-| 5 | | | | | `screenshots/lab1_run5.jpg` | |
-| 6 | | | | | `screenshots/lab1_run6.jpg` | |
-| 7 | | | | | `screenshots/lab1_run7.jpg` | |
+| Run | Date (local) | Time zone | Instance ID | Boot time (UTC) | Public IPv4 DNS | Screenshot | Terminated? |
+|-----|--------------|-----------|-------------|-----------------|-----------------|------------|-------------|
+| 1 | 2026-10-29 | America/Chicago | i-0abc123example | 2026-10-29 23:41:07 | ec2-3-91-0-1.compute-1.amazonaws.com | `screenshots/lab1_run1.jpg` | Yes |
+| 2 | | | | | | `screenshots/lab1_run2.jpg` | |
+| 3 | | | | | | `screenshots/lab1_run3.jpg` | |
+| 4 | | | | | | `screenshots/lab1_run4.jpg` | |
+| 5 | | | | | | `screenshots/lab1_run5.jpg` | |
+| 6 | | | | | | `screenshots/lab1_run6.jpg` | |
+| 7 | | | | | | `screenshots/lab1_run7.jpg` | |
 
-(Row 1 is an example — replace it with your real values.)
+(Row 1 is an example — replace it with your real values. The Instance ID and boot time must match your screenshot exactly. Boot time is in UTC, so in the evening in the US it may already show the next calendar day — that is expected.)
 
 ### 3.5 Personal notes — `lab1_notes.md`
 
-For **each run**, write at least **3 sentences**:
+For **each run**, start with the run number and Instance ID, then write at least **3 sentences**:
 
 - What went differently this time?
 - What error (if any) did you hit, and what fixed it?
 - What did you understand this time that you did not understand before?
+
+Also paste **at least one exact output line from that run** that only your run would have, such as the PID from `Started server process [12345]`, or an error message you actually got.
 
 End the file with a **"Mistakes I made"** list (at least 3 items) and a **"Commands I now know by heart"** list.
 
@@ -161,10 +170,18 @@ End the file with a **"Mistakes I made"** list (at least 3 items) and a **"Comma
 
 Review the Lesson 1 runbook with the AI of your choice (Claude, ChatGPT, Gemini, etc.). Ask it to explain the parts you did not fully understand.
 
+**You must submit the real conversation**, in one of two ways:
+
+- A **share link** to the conversation (most AI apps have a "Share" button), pasted at the top of the file, **or**
+- An **exported or copy-pasted transcript**, uploaded as `ai_review_transcript_YourNameHere.txt` (or `.pdf`).
+
+Your summary must match the conversation. The most important part, and what is graded most heavily, is **how you checked** each answer.
+
 Use this format:
 
 ```
 AI used = ?
+Conversation share link = ? (or "see ai_review_transcript_YourNameHere")
 
 Q1: (the question you asked)
 AI's answer, in my own words:
@@ -183,15 +200,27 @@ Where the AI was wrong, vague, or out of date:
 
 ## 6. Required — `spotter_YourNameHere.txt`
 
+This file has **two halves**: one about your spotter, and one about the person you spot for. They are cross-checked: what you write about your spotter must match what your spotter writes in **their** file about you.
+
 ```
-Spotter = ?
+Spotter = ?   (the person who spots YOU)
 5 things my spotter learned while working on the lab / homework:
 1. ?
 2. ?
 3. ?
 4. ?
 5. ?
+
+I am the spotter for = ?   (the person YOU spot)
+5 things I learned that I shared with them:
+1. ?
+2. ?
+3. ?
+4. ?
+5. ?
 ```
+
+**How the cross-check works:** if Jane is Alex's spotter, then the 5 points in Alex's first half (about Jane) should match the 5 points in Jane's second half (shared with Alex). Agree on your 5 points together, in your own words. They do not need to be word-for-word, but they must be the same 5 lessons.
 
 Be specific. Ask your spotter directly — these are **their** lessons, not yours.
 
@@ -208,7 +237,9 @@ Do this on **any one** of your lab-run instances (before Step 4, after stopping 
 cd /opt/balerica-bank
 ```
 
-Each screenshot must also show `whoami && TZ='Your/Zone' date`.
+Each screenshot must also show the **ID line** from Section 3.2. Use a **lab-run instance from your table**, and say which run number in your notes.
+
+**Use your own transaction IDs.** Every `TXN` you post must start with your initials, for example `TXN-JD-0001` for Jane Doe. Do not copy the IDs in the examples below.
 
 ### 7.1 Find your customers
 
@@ -226,7 +257,7 @@ Run each command, then immediately run `echo $?` to see the return code.
 |------------|------|----------------|
 | `cobol_rc0.jpg` | **0** — success | `./cobol/bin/account_lookup 100001` |
 | `cobol_rc4.jpg` | **4** — account not found | `./cobol/bin/account_lookup 999999` |
-| `cobol_rc8.jpg` | **8** — business rejection | `./cobol/bin/payment_post TXN9001 100001 0.00 USD TEST-ZERO` (zero amount) — then try an amount bigger than the balance |
+| `cobol_rc8.jpg` | **8** — business rejection | `./cobol/bin/payment_post TXN-XX-0001 100001 0.00 USD TEST-ZERO` (zero amount, with your initials in place of `XX`) — then try an amount bigger than the balance |
 | `cobol_rc12.jpg` | **12** — environment failure | `cd ~` then `/opt/balerica-bank/cobol/bin/account_lookup 100001` (wrong folder) |
 
 After the rc 12 test, go back with `cd /opt/balerica-bank`.
@@ -249,9 +280,10 @@ Screenshot as `cobol_ledger_decode.jpg`.
 
 ### 7.4 Write it up (add a "COBOL practice" section to `lab1_notes.md`)
 
-- What each return code meant, and the `REASON=` the program gave you.
+- Which run (and Instance ID) you used.
+- For each return code: the command you ran, the **exact** output lines (copy-paste them, including `ERROR=` or `STATUS=` / `REASON=`), and what the code means.
 - Decode Alice's balance by hand: what are the raw 12 characters, and what dollar amount do they mean? Why is there no decimal point in the file?
-- Run `cat data/payments.dat`. Find your own test transactions. Then look up account `100001` again. Did the balance change after your payments? Write down what you see and your best guess why.
+- Run `cat data/payments.dat`. Copy-paste **the journal lines for your own `TXN` IDs**. Then look up account `100001` again. Did the balance change after your payments? Write down what you see and your best guess why.
 
 **Optional:** check if the SQLite command-line tool is installed with `which sqlite3`. If it is, run `sqlite3 data/bank.db ".tables"` and `sqlite3 data/bank.db ".schema"`, and describe what tables the bank keeps.
 
@@ -263,7 +295,7 @@ On any lab-run instance:
 
 ```bash
 cd ~
-whoami && TZ='Your/Zone' date
+whoami && TZ='Your/Zone' date && ec2-metadata -i && uptime -s
 git clone https://github.com/YOUR-GITHUB-USERNAME/seir-foundations-homework.git
 ls seir-foundations-homework/module1
 ```
@@ -402,7 +434,7 @@ Research points:
 
 ## 10. "Be A Man" (BAM) extra credit
 
-Steps 5–8 of the runbook are now fair game. Each screenshot must show `whoami` and the local `date`.
+Steps 5–8 of the runbook are now fair game. Each screenshot must show the **ID line** from Section 3.2. Add a **BAM** section to `lab1_notes.md` with the Instance ID from each BAM screenshot.
 
 ### BAM_2.1 — Make `/ask` answer with Bedrock
 
@@ -430,6 +462,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 Then in **Window 2**, ask a question with `curl` (Step 8). Your screenshot must show a response whose `source` is **not** `offline-knowledge-base`.
 
+In your notes, record the **IAM role name** you attached and the **inference profile ID** you used. Ask a question that only your ledger can answer, and copy-paste the full response, for example: "What payments did TXN-XX-0001 produce?" with your own TXN ID.
+
 Bedrock calls are billed per use. A few test questions cost very little, but do not loop it.
 
 ### BAM_2.2 — Bake it in (launch template User Data)
@@ -453,7 +487,7 @@ Launch an instance from it, wait a few minutes, then SSH in. Your screenshot mus
 - `sudo tail -n 20 /var/log/cloud-init-output.log` showing `Installation complete.`
 - `cd /opt/balerica-bank && ./cobol/bin/account_lookup 100001` working — without you running the installer.
 
-In `lab1_notes.md`, explain: what did you have to fix (if anything), and why does User Data run as `root` by default?
+In `lab1_notes.md`, record the **launch template ID** (starts with `lt-`) and version number, and paste your final User Data script. Then explain: what did you have to fix (if anything), and why does User Data run as `root` by default?
 
 ### BAM_2.3 — Build a golden AMI
 
@@ -469,13 +503,18 @@ Turn a successfully configured instance into a reusable image.
 ```bash
 cd /opt/balerica-bank
 source venv/bin/activate
-whoami && TZ='Your/Zone' date
+whoami && TZ='Your/Zone' date && ec2-metadata -i && uptime -s
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 Your screenshot must show `Application startup complete.` on the AMI-launched instance, with no installer run.
 
-In `lab1_notes.md`, record the AMI ID and answer:
+In `lab1_notes.md`, record:
+
+- The **AMI ID** (starts with `ami-`) and the **snapshot ID** behind it (starts with `snap-`, found under **EC2 → Snapshots**).
+- The Instance ID of the instance you **built the AMI from**, and the Instance ID of the instance you **launched from the AMI**.
+
+Then answer:
 
 - Were your earlier test payments still in `data/payments.dat` on the new instance? Why?
 - What is the difference between a launch template (BAM_2.2) and an AMI (BAM_2.3)? When would you use each?
@@ -508,13 +547,14 @@ In `lab1_notes.md`, record the AMI ID and answer:
 
 **Required**
 - [ ] I completed Steps 0–4 on **seven** fresh EC2 instances, with **no more than 3** on any one local date.
-- [ ] Each `lab1_run` screenshot shows `whoami`, the local `date`, and `Application startup complete.`
-- [ ] My `lesson1_ec2/README.md` has the run table with seven unique Instance IDs and Public DNS names.
+- [ ] Every screenshot shows the full ID line: `whoami`, local `date`, `ec2-metadata -i`, and `uptime -s`.
+- [ ] Each `lab1_run` screenshot also shows `Application startup complete.`
+- [ ] My `lesson1_ec2/README.md` has the run table with seven unique Instance IDs, boot times, and Public DNS names that match my screenshots.
 - [ ] I terminated every lab instance and checked for leftover volumes and Elastic IPs. My launch template still exists.
-- [ ] I uploaded `lab1_notes.md` with notes for every run, a "Mistakes I made" list, and a "COBOL practice" section.
+- [ ] I uploaded `lab1_notes.md` with notes for every run (each with its Instance ID and one exact output line), a "Mistakes I made" list, and a "COBOL practice" section with my own TXN IDs and exact output lines.
 - [ ] I completed the Maarek Section 21, 23, and 25 quizzes and uploaded the screenshots.
-- [ ] I uploaded `ai_review_YourNameHere.txt` with at least 5 questions and one place the AI was wrong or vague.
-- [ ] I uploaded `spotter_YourNameHere.txt` with my spotter's name and 5 specific things they learned.
+- [ ] I uploaded `ai_review_YourNameHere.txt` with a share link or transcript, at least 5 questions, how I checked each one, and one place the AI was wrong or vague.
+- [ ] I uploaded `spotter_YourNameHere.txt` with both halves filled in: my spotter + 5 things they learned, and the person I spot + 5 things I shared with them.
 - [ ] I triggered return codes 0, 4, 8, and 12 and decoded the ledger, with screenshots.
 - [ ] I cloned my own homework repo onto EC2 (clone only, no push) and uploaded `git_clone.jpg`.
 - [ ] I uploaded `AI_enabled_study_lab1.0.txt` with one paragraph (minimum 5 sentences) for each of the 5 topics, using all three sources per topic, with a source and year for every number.
