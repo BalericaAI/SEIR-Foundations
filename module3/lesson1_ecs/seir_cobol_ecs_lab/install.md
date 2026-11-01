@@ -29,6 +29,8 @@ Student laptop / AWS CloudShell with Docker-capable build host
 - `hello.cbl` — deterministic sample financial calculation; synthetic figures only.
 - `Dockerfile` — multi-stage compilation with GnuCOBOL; unprivileged runtime user.
 - `deploy.sh` — creates lab resources, builds/pushes the image, registers a task definition, runs it, and collects results.
+- `terraform/` — optional declarative provisioning of the same resources; see [`terraform/README.md`](terraform/README.md).
+- `pipeline_config.md` — explains the starter GitHub Actions CI pipeline (`.github/workflows/terraform-checks.yml` at the repository root) that runs Terraform format and validation checks, with a Jenkins-to-Actions translation guide.
 
 Replace `hello.cbl` with the **tested Module 1 source** once the sample works. If Module 1 depended on local files, CICS, a particular COBOL dialect, copybooks, or a database, identify and adapt those dependencies first; a container does not automatically provide them.
 
@@ -105,7 +107,7 @@ Use branches or isolated student environments for destructive tests. Never delib
 2. Run the adapter as a persistent **ECS service**, without public ingress.
 3. Add a separate FastAPI ECS service and private service discovery.
 4. Add PostgreSQL/RDS and implement atomic ledger transactions, idempotency and reconciliation.
-5. Migrate the build and deployment steps into GitHub Actions with pull-request quality gates and Terraform-managed infrastructure (the [`terraform/`](terraform/README.md) option in this lab is the first step).
+5. Migrate the build and deployment steps into GitHub Actions with pull-request quality gates and Terraform-managed infrastructure (the [`terraform/`](terraform/README.md) option and the Terraform-checks pipeline described in [`pipeline_config.md`](pipeline_config.md) are the first steps).
 6. Add read-only AI investigation agents on ECS and compare with Bedrock AgentCore.
 
 ### 7. Cleanup

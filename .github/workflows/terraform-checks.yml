@@ -1,0 +1,53 @@
+# SEIR Foundations — Module 3 / Lab 01
+# CI pipeline: Terraform checks for the COBOL ECS Fargate lab.
+#
+# Full walkthrough and Jenkins-to-GitHub-Actions translation guide:
+# module3/lesson1_ecs/seir_cobol_ecs_lab/pipeline_config.md
+
+name: terraform-checks
+
+on:
+  pull_request:
+    paths:
+      - "module3/lesson1_ecs/seir_cobol_ecs_lab/terraform/**"
+      - ".github/workflows/terraform-checks.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "module3/lesson1_ecs/seir_cobol_ecs_lab/terraform/**"
+      - ".github/workflows/terraform-checks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: module3/lesson1_ecs/seir_cobol_ecs_lab/terraform
+
+jobs:
+  terraform-checks:
+    name: Terraform format and validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive -diff
+
+      - name: terraform init (no backend, no cloud credentials needed)
+        run: terraform init -backend=false -input=false
+
+      - name: terraform validate
+        run: terraform validate -no-color
+
+  # A Snyk security-scanning job will be added here later in the course.
+  # It will scan the Terraform configuration and the lab's Docker image,
+  # authenticated with a SNYK_TOKEN repository secret. Do not add it yet.
