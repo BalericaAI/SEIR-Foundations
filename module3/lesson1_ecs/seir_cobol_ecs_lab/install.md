@@ -66,6 +66,11 @@ The process exit code must be `0`. If it exits nonzero, **do not deploy**. This 
 
 ### 3. Deploy to ECS
 
+Two provisioning options create the same AWS resources with the same names. **Pick one per account — they collide if you run both.**
+
+- **Option A — script (this section):** `deploy.sh` provisions, builds, pushes, runs the task, and collects results in one pass.
+- **Option B — Terraform:** the [`terraform/`](terraform/README.md) directory provisions the same infrastructure declaratively, with `terraform destroy` as a complete cleanup. The image build/push and `run-task` steps stay on the CLI; Terraform prints the exact commands as outputs.
+
 The script creates/uses an ECR repository, an ECS cluster, an ECS task execution IAM role, a CloudWatch log group, and a security group with **no inbound permissions**. It selects a subnet in the default VPC and assigns a public IPv4 address **only for outbound image pull and logging in this beginner batch lab**; the container does not expose an inbound port. This is not the design for the later banking services.
 
 ```bash
@@ -100,10 +105,12 @@ Use branches or isolated student environments for destructive tests. Never delib
 2. Run the adapter as a persistent **ECS service**, without public ingress.
 3. Add a separate FastAPI ECS service and private service discovery.
 4. Add PostgreSQL/RDS and implement atomic ledger transactions, idempotency and reconciliation.
-5. Migrate the build and deployment steps into GitHub Actions with pull-request quality gates and Terraform-managed infrastructure.
+5. Migrate the build and deployment steps into GitHub Actions with pull-request quality gates and Terraform-managed infrastructure (the [`terraform/`](terraform/README.md) option in this lab is the first step).
 6. Add read-only AI investigation agents on ECS and compare with Bedrock AgentCore.
 
 ### 7. Cleanup
+
+If you provisioned with Terraform (Option B), run `terraform destroy` from the `terraform/` directory instead of the commands below.
 
 Only remove these resources when they belong exclusively to **your** lab. The commands below deliberately do **not** delete the IAM role or shared default VPC. Do not run them against shared class infrastructure.
 
