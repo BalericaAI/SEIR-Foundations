@@ -13,7 +13,7 @@ Before starting this runbook, you **must** complete:
 - [ ] Confirm you can SSH into your student EC2 and have Python 3 and `pip` available.
 
 > **YO STUDENT! INSERT YOUR SLACK WORKSPACE URL IN `slack.py` OR CHEWBACCA BITES YOU!!!!!**  
-> `https://chewbacca.slack.com` is an **example**, not your workspace. And no, the workspace URL is **not** the Incoming Webhook URL.
+> `https://chewbacca.slack.com` is an **example**, not your workspace. Chewbacca bites regardless of validation: leaving the placeholder makes `python slack.py --test` fail with `CHOMP!!!` before anything is sent. And no, the workspace URL is **not** the Incoming Webhook URL.
 
 ## 1. Create and configure your Incoming Webhook
 
@@ -129,6 +129,7 @@ The test uses `ERROR` severity so it passes the default `SLACK_ALERT_SEVERITY=ER
 |---|---|
 | `SKIPPED: Check alert settings in .env` | Set `SLACK_ALERTS_ENABLED=true` and `SLACK_ALERT_SEVERITY=ERROR` (or lower). |
 | `FAILED` and missing webhook | Check `SLACK_WEBHOOK_URL` is set in `.env` and begins with `https://hooks.slack.com/services/`. |
+| `FAILED: CHOMP!!! Chewbacca bit you` | You left the placeholder in `slack.py`. Set `SLACK_WORKSPACE_URL` to your own workspace URL. |
 | `FAILED` and workspace validation | Correct `SLACK_WORKSPACE_URL` in `slack.py`; include `https://` and your `.slack.com` hostname. |
 | HTTP 403/404 or revoked webhook | Revisit Slack app → Incoming Webhooks, check authorization, and rotate/recreate the webhook if necessary. |
 | `ModuleNotFoundError` | Activate the correct virtual environment and reinstall dependencies. |
