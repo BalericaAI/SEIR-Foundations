@@ -33,6 +33,12 @@ def send_alert(agent: str, severity: str, message: str, incident_id: str = "") -
     parsed_workspace = urlparse(workspace)
     if parsed_workspace.scheme != "https" or not parsed_workspace.hostname or not parsed_workspace.hostname.endswith(".slack.com"):
         raise ValueError("Fix SLACK_WORKSPACE_URL. Chewbacca is waiting.")
+    if parsed_workspace.hostname == "chewbacca.slack.com":
+        raise ValueError(
+            "CHOMP!!! Chewbacca bit you: SLACK_WORKSPACE_URL is still the "
+            "https://chewbacca.slack.com placeholder. Set it to YOUR OWN "
+            "workspace URL near the top of slack.py."
+        )
 
     webhook = os.getenv("SLACK_WEBHOOK_URL", "").strip()
     parsed_webhook = urlparse(webhook)
@@ -63,8 +69,13 @@ def main():
     try:
         result = send_alert("slack.py", "ERROR", "TEST: Slack is connected. RRRRAAAWWWRRR!", "TEST-001")
         print("SUCCESS: Chewbacca approves!" if result else "SKIPPED: Check alert settings in .env")
-    except (ValueError, RuntimeError, requests.RequestException) as exc:
-        print(f"FAILED ({type(exc).__name__}). Check workspace URL, webhook, .env and network.")
+    except (ValueError, RuntimeError) as exc:
+        # Our own validation messages are static and never contain secrets.
+        print(f"FAILED: {exc}")
+        raise SystemExit(1)
+    except requests.RequestException as exc:
+        # requests exceptions can embed the webhook URL, so stay generic.
+        print(f"FAILED ({type(exc).__name__}). Check webhook, .env and network.")
         raise SystemExit(1)
 
 

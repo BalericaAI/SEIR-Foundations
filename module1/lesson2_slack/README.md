@@ -4,7 +4,7 @@
 
 **Claude Code is required for this class.** Use it as a lab assistant: ask it to explain instructions, inspect errors, and propose minimal fixes. **You** are responsible for running commands, understanding changes, protecting credentials, and proving the alert reached Slack.
 
-> **CHEWBACCA WARNING:** YO STUDENT! INSERT YOUR SLACK WORKSPACE URL IN `slack.py` OR CHEWBACCA BITES YOU!!!!! And no, copying your neighbor's URL does not count.
+> **CHEWBACCA WARNING:** YO STUDENT! INSERT YOUR SLACK WORKSPACE URL IN `slack.py` OR CHEWBACCA BITES YOU!!!!! And no, copying your neighbor's URL does not count. This is enforced: `slack.py` refuses to send anything while the placeholder `https://chewbacca.slack.com` is still in place, and the test fails with a `CHOMP!!!`.
 
 ## 0. Required reading and files
 
