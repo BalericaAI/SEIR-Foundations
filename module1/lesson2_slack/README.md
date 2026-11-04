@@ -10,10 +10,19 @@
 
 Complete these **in order** before attempting the test:
 
-1. **`slack_install.md`** — Install the Slack desktop app using `brew` (macOS) or `choco` (Windows); create/sign into your individual workspace.
-2. **`slack.py`** — Copy the agent to your EC2 instance and update `SLACK_WORKSPACE_URL` to your workspace URL, in **one place near the top of the file**.
-3. **`runbook.md`** — Follow the webhook setup, private-notes, dependency installation, and test procedures.
-4. **`slack.env.example`** — Template for the `.env` settings; do **not** put a real webhook URL in a tracked file.
+1. **`why_slack_matters.md`** — Start here if you are wondering why this lab matters: what Slack is, what alerting is, and why this skill is career fuel.
+2. **`slack_install.md`** — Install the Slack desktop app using `brew` (macOS) or `choco` (Windows); create/sign into your individual workspace.
+3. **`install_slack_py.md`** — Step-by-step: get `slack.py` onto your EC2 instance at `/opt/balerica-bank` (the Lesson 1 bank directory), configure it, and test it.
+4. **`runbook.md`** — The webhook setup, private-notes, dependency installation, and test procedures.
+5. **`slack.env.example`** — Template for the `.env` settings; do **not** put a real webhook URL in a tracked file.
+
+**Beginner support guides (read when you hit the topic):**
+
+- **`env_explained.md`** — What `.env` is, why the dot, why `ls` hides it, and the three protections around it.
+- **`nano_basics.md`** — Editing files on EC2: `Ctrl+O`, `Enter`, `Ctrl+X`, and the situations that confuse beginners.
+- **`claude_code_explained.md`** — Why Claude Code is required, what it does for you, and why the rules around it exist.
+
+**After the lab:** the **`homework/`** folder has seven short Python scripts that send alerts to your Slack — run them all this week (see `homework/README.md`).
 
 If a step is unclear, **ask Claude Code to read these files before making suggestions**. Do not ask it to invent a different lab architecture.
 
