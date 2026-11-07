@@ -111,7 +111,7 @@ browser when you open your Slack workspace. Then save and exit:
 Copy the template, lock it down, and edit it:
 
 ```bash
-cp -n ~/SEIR-Foundations/module1/lesson2_slack/slack.env.example /opt/balerica-bank/.env
+cp -n ./module1/lesson2_slack/slack.env.example /opt/balerica-bank/.env
 chmod 600 .env
 nano .env
 ```
