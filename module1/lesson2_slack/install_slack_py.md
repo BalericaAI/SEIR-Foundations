@@ -49,7 +49,7 @@ Expected output ends with `Resolving deltas: 100% ..., done.`
 Confirm the Lesson 2 files exist:
 
 ```bash
-ls ~/SEIR-Foundations/module1/lesson2_slack
+ls ./module1/lesson2_slack
 ```
 
 Expected output:
