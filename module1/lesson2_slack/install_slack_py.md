@@ -69,7 +69,7 @@ env_explained.md          nano_basics.md       slack.py
 future scripts (and your homework) can import it.
 
 ```bash
-cp ~/SEIR-Foundations/module1/lesson2_slack/slack.py /opt/balerica-bank/
+cp ./module1/lesson2_slack/slack.py /opt/balerica-bank/
 cd /opt/balerica-bank
 ls slack.py
 ```
