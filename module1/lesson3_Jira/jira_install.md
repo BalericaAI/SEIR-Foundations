@@ -62,7 +62,7 @@ JIRA_DEFAULT_ISSUE_TYPE=Task
 
 For the future `jira.py` integration, you'll generate an Atlassian API token from your Atlassian account's security settings and store it securely as `JIRA_API_TOKEN` in an EC2 `.env` file. **Do not generate or submit a token for this account-creation exercise unless the instructor explicitly requests it.** Never paste tokens into a README, screenshots, GitHub, Slack, or AI chat prompts.
 
-When that step arrives, use Atlassian's current instructions: [Manage API tokens](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/). API-token scopes and authentication requirements may vary; follow the later `jira.py` lab instructions.
+When that step arrives, use Atlassian's current instructions: [Manage API tokens](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/) and this lesson's `jira_runbook.md`. **Choose the plain "Create API token" option, not "Create API token with scopes"** — scoped tokens cannot authenticate against your `*.atlassian.net` site URL, which is what `jira.py` uses, and fail with 401. Tokens also expire (1–365 days), so record the expiry date.
 
 ## 5. Verify completion
 

@@ -34,9 +34,9 @@ This is a controlled classroom lab, not an unattended production incident-respon
 
 - [ ] Complete `slack_install.md`; create and sign in to your own Slack Free workspace.
 - [ ] Configure `slack.py` and its `SLACK_WORKSPACE_URL` variable. Your workspace URL must begin with `https://`.
-- [ ] Complete the Slack runbook and confirm `python3 slack.py --test` posts a message.
+- [ ] Complete the Slack runbook (`slack_runbook.md`) and confirm `python3 slack.py --test` posts a message.
 - [ ] Complete `jira_install.md`; create and sign in to your own Jira Cloud Free site and project.
-- [ ] Configure `jira.py` and complete the Jira runbook.
+- [ ] Configure `jira.py` and complete the Jira runbook (`jira_runbook.md`), including finding the test ticket on your board.
 - [ ] Confirm `python3 jira.py --verify` succeeds.
 - [ ] Have access to your EC2 instance, Python 3, pip, and Claude Code.
 - [ ] Read `incident_integration.md` and keep `troubleshooting.md` available.
@@ -48,8 +48,10 @@ This is a controlled classroom lab, not an unattended production incident-respon
 | File | Responsibility |
 |---|---|
 | `slack_install.md` | Slack account, workspace, and webhook setup |
+| `slack_runbook.md` | Step-by-step Slack webhook configuration and test |
 | `slack.py` | Send notifications using the Slack Incoming Webhook |
 | `jira_install.md` | Jira Cloud account, site, and project setup |
+| `jira_runbook.md` | Step-by-step `jira.py` configuration, test, and board verification |
 | `jira.py` | Verify Jira connectivity and create incident issues |
 | `incident.py` | Coordinate Jira issue creation and Slack notification |
 | `incident_integration.md` | Integration installation and invocation details |
@@ -194,9 +196,10 @@ Claude Code is an assistant, not a substitute for understanding the result. Stud
 | Slack worked yesterday, not today | Did Jira setup replace `.env` and remove `SLACK_WEBHOOK_URL`? |
 | No Slack alert | Webhook, channel authorization, `SLACK_ALERTS_ENABLED`, severity threshold |
 | Slack alert goes to unexpected channel | Incoming Webhook's configured destination; `SLACK_ALERT_CHANNEL` does not reroute it |
-| Jira 401 | Account email and API token |
+| Jira 401 | Account email and API token; a **scoped** token ("Create API token with scopes") never works here — use a plain token; expired token |
 | Jira 403 | Project access and issue creation permissions |
 | Jira 404 | Site URL, project key, and endpoint access |
+| Ticket created but not on the board | Check the **Backlog** view, board filters, project key, and signed-in site — `jira_runbook.md` Step 5 |
 | Jira issue creation rejected | Project's available issue types and required fields |
 | `ModuleNotFoundError` | Active Python environment and pip dependencies |
 | SQLite state error | `data/` directory, path, and write permissions |
