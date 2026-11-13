@@ -55,6 +55,7 @@ This is a controlled classroom lab, not an unattended production incident-respon
 | `jira.py` | Verify Jira connectivity and create incident issues |
 | `incident.py` | Coordinate Jira issue creation and Slack notification |
 | `incident_integration.md` | Integration installation and invocation details |
+| `cursor_jira_integration_runbook.md` | Optional: connect the Cursor editor's agent to Jira (benefits + steps) |
 | `troubleshooting.md` | Common failures and diagnostic questions |
 | `.env` | **Private** credentials and configuration; never commit |
 | `data/incident_state.db` | Locally persisted incident state, created as needed |
