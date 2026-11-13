@@ -8,8 +8,9 @@
 
 Check every box **before** asking for help:
 
-- [ ] Did you complete `slack_install.md` and the Slack lab runbook?
-- [ ] Did you complete `jira_install.md` and the Jira runbook?
+- [ ] Did you complete `slack_install.md` and the Slack runbook (`slack_runbook.md`)?
+- [ ] Did you complete `jira_install.md` and the Jira runbook (`jira_runbook.md`)?
+- [ ] Did you create a **plain** Atlassian API token ("Create API token"), not an **API token with scopes**? Scoped tokens always fail with 401 in this lab (see `jira_runbook.md` Step 1).
 - [ ] **Did you sign in to your own Slack workspace?** Can you open `#balerica-alerts` and see messages?
 - [ ] **Did you sign in to your own Jira Cloud site?** Can you open your Balerica AI project and its issues?
 - [ ] Did you edit the student workspace URL in `slack.py`? (Not the instructor's example URL!)
@@ -135,15 +136,29 @@ python jira.py --test
 
 | Symptom | First checks |
 |---|---|
-| 401 Unauthorized | Atlassian account email/token pair; revoked or mistyped token |
+| 401 Unauthorized | Atlassian account email/token pair; revoked, expired, or mistyped token; **scoped token** (see below) |
+| 401 with a freshly created token | You selected **"Create API token with scopes"**. Scoped tokens only authenticate against `api.atlassian.com`, never against `https://YOUR-SITE.atlassian.net`, which is what `jira.py` uses. Create a plain **"Create API token"** instead |
+| 401 after it worked for weeks | Atlassian API tokens expire (1–365 days, chosen at creation). Create a new token and update `.env` |
 | 403 Forbidden | Account/project permissions; token scope or access restrictions |
 | 404 Not Found | Wrong `.atlassian.net` site, project key, or endpoint; check actual project |
 | 400 Bad Request | Issue type `Task` unavailable, required project fields missing, or invalid issue data |
 | Test issue appears in wrong project | Confirm `JIRA_PROJECT_KEY` in `.env` |
-| Cannot see test issue | Logged into the same Jira site/account? Board filters hiding the issue? |
+| Cannot see test issue | Logged into the same Jira site/account? Board filters hiding the issue? See the board section below |
 | Token copied with spaces/quotes | Carefully re-enter into `.env`; never display it in terminal output |
 
 **Reminder:** Jira account password and Jira API token are not interchangeable.
+
+### The ticket exists but is NOT on your board
+
+This is the most common Jira complaint in this lab, and it is almost never a connectivity failure. `jira.py --test` and `incident.py --test` print the ticket URL. Work through these in order:
+
+1. **Open the printed `/browse/...` URL directly.** If the ticket opens, the API integration works; everything below is about *where Jira put it*, not about your code or credentials.
+2. **Check the Backlog.** In team-managed projects with the backlog feature enabled, new work items land in the **Backlog** list, not on the board. Select **Backlog** in the project's left navigation. If the ticket is there, drag it onto the board or change its status. This explains the majority of "my alert never reached the board" reports.
+3. **Clear the board's search box and quick filters.** Leftover filter text hides cards.
+4. **Compare project keys.** The prefix of the issue key in the URL (`BAI-3` → `BAI`) must match the project whose board you are viewing. If it does not, `JIRA_PROJECT_KEY` in `.env` points at a different project.
+5. **Compare sites.** You may be signed in to a different Atlassian site than `JIRA_SITE_URL` (instructor demo site, personal site, work account). Check the browser address bar.
+6. **Use the Issues / work-item list view.** Unlike boards, it shows every item in the project regardless of status, backlog, or board filter — if the ticket is missing there too, you really are looking at the wrong project or site.
+7. **Company-managed projects only:** the board is driven by a saved filter that may exclude your issue type; inspect the board's filter in its settings.
 
 ## 6. Test the combined incident workflow LAST
 

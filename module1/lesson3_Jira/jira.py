@@ -62,7 +62,9 @@ def _adf(text: str) -> dict:
         "type": "doc",
         "version": 1,
         "content": [
-            {"type": "paragraph", "content": ([{"type": "text", "text": line}] if line else [])}
+            # An empty paragraph must omit "content" entirely: ADF rejects
+            # empty content arrays, which would 400 on blank message lines.
+            {"type": "paragraph", **({"content": [{"type": "text", "text": line}]} if line else {})}
             for line in lines
         ],
     }
