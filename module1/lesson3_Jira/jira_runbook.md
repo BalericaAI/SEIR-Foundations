@@ -37,13 +37,13 @@ Your `.env` already contains your Slack settings. **Merge — do not replace.**
 
 1. On EC2, change into the directory containing `jira.py` and `.env`.
 
-[ec2-user@ip-172-31-40-45 balerica-bank]$ pwd
-/opt/balerica-bank
-[ec2-user@ip-172-31-40-45 balerica-bank]$ ls
-agents  app  cobol  data  incident.py  jira.py  logs  slack.py  swift  venv
-[ec2-user@ip-172-31-40-45 balerica-bank]$ ls -a
-.  ..  .env  .gitignore  agents  app  cobol  data  incident.py  jira.py  logs  slack.py  swift  venv
-[ec2-user@ip-172-31-40-45 balerica-bank]$ 
+         [ec2-user@ip-172-31-40-45 balerica-bank]$ pwd
+         /opt/balerica-bank
+         [ec2-user@ip-172-31-40-45 balerica-bank]$ ls
+         agents  app  cobol  data  incident.py  jira.py  logs  slack.py  swift  venv
+         [ec2-user@ip-172-31-40-45 balerica-bank]$ ls -a
+         .  ..  .env  .gitignore  agents  app  cobol  data  incident.py  jira.py  logs  slack.py  swift  venv
+         [ec2-user@ip-172-31-40-45 balerica-bank]$ 
 
 2. Open the existing file: `nano .env` (or `vi .env`).
 3. Add these lines at the bottom, keeping every existing Slack line untouched:
