@@ -77,6 +77,15 @@ Your `.env` already contains your Slack settings. **Merge — do not replace.**
 
 ## Step 3 — Verify connectivity (creates nothing)
 
+From the directory containing slack.py, activate your existing project virtual environment if one is available. Otherwise create one:
+
+         python3 -m venv .venv
+         source .venv/bin/activate
+
+Install the dependencies
+
+         python -m pip install requests python-dotenv
+
 From the directory containing `jira.py` and `.env`, with your virtual environment active:
 
 ```bash
