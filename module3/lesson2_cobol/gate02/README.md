@@ -1,5 +1,7 @@
 # SEIR Foundations — Module 3 — Lab 02 — Gate 02
 
+> Prefer a single start-to-finish checklist with exact commands and expected outputs? Follow [`runbook.md`](runbook.md) — it is fully self-contained.
+
 ## Deploy the validated COBOL + FastAPI service to AWS ECS Fargate
 
 **Jira:** M3-1 (tracking Epic; this package is *not* automatically synced to Jira).

@@ -1,5 +1,7 @@
 # SEIR Foundations — Module 3 Lab 02 — Gate 01
 
+> Prefer a single start-to-finish checklist with exact commands and expected outputs? Follow [`runbook.md`](runbook.md) — it is fully self-contained.
+
 ## Goal
 Turn Lab 01's one-shot COBOL batch execution into a local persistent HTTP service using FastAPI, with **GnuCOBOL actually performing the calculations**. This is the application gate before Amazon ECR, ECS Fargate, and ALB deployment.
 
