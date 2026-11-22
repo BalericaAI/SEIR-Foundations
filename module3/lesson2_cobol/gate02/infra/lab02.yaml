@@ -6,7 +6,7 @@ Parameters:
     Description: Fully qualified immutable ECR image URI (prefer tag with digest pinning)
   AllowedCidr:
     Type: String
-    AllowedPattern: '^([0-9]{1,3}\.){3}[0-9]{1,3}/(3[0-2]|[12][0-9]|[0-9])$'
+    AllowedPattern: '^(?!0\.0\.0\.0/0$)([0-9]{1,3}\.){3}[0-9]{1,3}/(3[0-2]|[12][0-9]|[0-9])$'
     Description: Student's PUBLIC IPv4 /32. Never allow 0.0.0.0/0.
   Cpu:
     Type: String

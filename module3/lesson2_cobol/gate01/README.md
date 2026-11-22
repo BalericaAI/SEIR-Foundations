@@ -24,7 +24,7 @@ Turn Lab 01's one-shot COBOL batch execution into a local persistent HTTP servic
 ## Gate 01 execution (student)
 
 ```bash
-cd seir_module3_lab02_gate01
+cd module3/lesson2_cobol/gate01   # from the root of your SEIR-Foundations clone
 # Optional contract tests (mocked COBOL runner; do not prove COBOL compilation):
 python3 -m pip install -r requirements-dev.txt
 python3 -m pytest tests/ -v

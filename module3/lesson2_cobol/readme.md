@@ -1,6 +1,18 @@
 # Module 3 — Lesson 2: From one-shot batch task to an always-on COBOL service
 
-Lab 02 ([`seir_lab02_cobol_ecs/`](seir_lab02_cobol_ecs/README.md)) turns the Lab 01 idea — run COBOL once as an ECS Fargate **task** — into a COBOL-backed HTTP application managed as an ECS **service**: two tasks in private subnets behind an Application Load Balancer.
+Lab 02 turns the Lab 01 idea — run COBOL once as an ECS Fargate **task** — into a COBOL-backed HTTP application managed as an ECS **service**: two tasks in private subnets behind an Application Load Balancer.
+
+## How this lab is organized — do the Gates, in order
+
+Lab 02 is split into three gates. Complete them in sequence; each gate assumes the previous one passed:
+
+| Gate | Folder | What you do | AWS needed? |
+|---|---|---|---|
+| **Gate 01** | [`gate01/`](gate01/README.md) | Build and validate the FastAPI + GnuCOBOL service locally in Docker | No |
+| **Gate 02** | [`gate02/`](gate02/README.md) | Deploy the validated image to ECR + ECS Fargate behind an ALB via CloudFormation | Yes |
+| **Gate 03** | [`gate03/`](gate03/readme.md) | Deliberately stop one task, observe ECS desired-state recovery, write an incident report | Yes (your Gate 02 stack) |
+
+The older single-package version of this lab ([`seir_lab02_cobol_ecs/`](seir_lab02_cobol_ecs/README.md)) is kept for reference; new cohorts should follow the gates above.
 
 It is easy to forget where Lab 01 left off, so use this checkpoint before starting.
 
@@ -44,4 +56,4 @@ Note that Lab 02 needs **more IAM permissions** than Lab 01 (CloudFormation, VPC
 
 ## Start Lab 02
 
-Continue to [`seir_lab02_cobol_ecs/README.md`](seir_lab02_cobol_ecs/README.md).
+Begin with Gate 01: [`gate01/README.md`](gate01/README.md).
