@@ -12,6 +12,8 @@ Lab 02 is split into three gates. Complete them in sequence; each gate assumes t
 | **Gate 02** | [`gate02/`](gate02/README.md) | Deploy the validated image to ECR + ECS Fargate behind an ALB via CloudFormation | Yes |
 | **Gate 03** | [`gate03/`](gate03/readme.md) | Deliberately stop one task, observe ECS desired-state recovery, write an incident report | Yes (your Gate 02 stack) |
 
+Each gate folder also contains a self-contained **`runbook.md`** — a start-to-finish checklist with every command and its exact expected output. If you only read one document per gate, read that one.
+
 It is easy to forget where Lab 01 left off, so use this checkpoint before starting.
 
 ## Checkpoint — what you should already have done in Lab 01

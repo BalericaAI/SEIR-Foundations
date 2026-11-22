@@ -1,6 +1,8 @@
 # SEIR Foundations — Module 3, Lab 02 — Gate 03
 ## ECS desired-state recovery, health signals, and incident response
 
+> Prefer a single start-to-finish checklist with exact commands and expected outputs? Follow [`runbook.md`](runbook.md) — it is fully self-contained.
+
 **Status:** Lab materials prepared; AWS execution must be performed in the instructor/student sandbox. Gate 01 and Gate 02 were reported successful with cosmetic changes. This ZIP preserves the prior Gate 02 application and CloudFormation template; Gate 03 adds controlled-failure tools and evidence templates.
 
 **Jira reference:** M3-1. Do not automatically sync this lab to Jira until instructed.
