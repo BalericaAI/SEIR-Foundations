@@ -57,7 +57,8 @@ This is an **instructional** two-AZ application deployment, not a fully AZ-resil
 ## Step 1 — Local smoke test
 
 ```bash
-python3 -m unittest discover -s tests -v
+python3 -m pip install -r requirements-dev.txt
+python3 -m pytest tests/ -v
 # Or use your existing Gate 01 validation evidence.
 docker build --platform linux/amd64 -t seir-cobol-lab02:gate02-local .
 docker run --rm --platform linux/amd64 -p 127.0.0.1:8080:8080 seir-cobol-lab02:gate02-local
