@@ -12,8 +12,6 @@ Lab 02 is split into three gates. Complete them in sequence; each gate assumes t
 | **Gate 02** | [`gate02/`](gate02/README.md) | Deploy the validated image to ECR + ECS Fargate behind an ALB via CloudFormation | Yes |
 | **Gate 03** | [`gate03/`](gate03/readme.md) | Deliberately stop one task, observe ECS desired-state recovery, write an incident report | Yes (your Gate 02 stack) |
 
-The older single-package version of this lab ([`seir_lab02_cobol_ecs/`](seir_lab02_cobol_ecs/README.md)) is kept for reference; new cohorts should follow the gates above.
-
 It is easy to forget where Lab 01 left off, so use this checkpoint before starting.
 
 ## Checkpoint — what you should already have done in Lab 01
