@@ -305,9 +305,9 @@ Platform notes:
 
 This runbook uses `bash create_balerica_vpc.sh` everywhere since it works on every platform.
 
-### Step 5 — Configure it
+### Step 5 — Configure it (and how to open it in an editor)
 
-There is nothing to edit inside the file. The script reads three optional environment variables and has class-correct defaults for all of them:
+The script reads three optional environment variables and has class-correct defaults for all of them:
 
 | Variable | Default | Meaning |
 |---|---|---|
@@ -315,9 +315,9 @@ There is nothing to edit inside the file. The script reads three optional enviro
 | `PROJECT` | `balerica` | Prefix for every Name tag and the state file |
 | `NETWORK_PREFIX` | `10.20` | First two octets of every address |
 
-**For this class, change nothing** — the defaults ARE the configuration. You would only override them (e.g. `NETWORK_PREFIX=10.30 PROJECT=balerica-dev`) with instructor approval, for a second non-overlapping deployment.
+**For this class, change nothing** — the defaults ARE the configuration. You would only change them (e.g. `NETWORK_PREFIX=10.30 PROJECT=balerica-dev`) with instructor approval, for a second non-overlapping deployment. There are two ways to change them:
 
-If you do override, the syntax is Bash's "variables before the command on the same line" form:
+**Way 1 — override at run time, no editing (preferred):** Bash's "variables before the command on the same line" form:
 
 ```bash
 AWS_REGION=us-east-1 PROJECT=balerica NETWORK_PREFIX=10.20 bash create_balerica_vpc.sh
@@ -326,6 +326,54 @@ AWS_REGION=us-east-1 PROJECT=balerica NETWORK_PREFIX=10.20 bash create_balerica_
 (For comparison, PowerShell would use `$env:AWS_REGION="us-east-1"` — but remember, you are not running this from PowerShell.)
 
 The script also sets `AWS_DEFAULT_REGION` and turns the CLI pager off by itself, so you don't need any `export` lines first.
+
+**Way 2 — edit the defaults inside the script.** When your instructor asks you to change the subnet values in the file itself, use **Visual Studio Code** — nano works too, but you are not stuck with it.
+
+#### Opening the script in VS Code from your terminal
+
+Once the `code` command works, it is the same on every platform — run it in the folder where you downloaded the script, right after the `curl`:
+
+```bash
+code create_balerica_vpc.sh            # opens the create script in VS Code
+code delete_balerica_vpc.sh            # the teardown script opens the same way
+```
+
+(The delete script never needs editing — it reads everything from the state file — but you are welcome to open and read it.)
+
+Getting `code` onto your PATH differs per platform:
+
+- **macOS:** `code` is NOT available by default, even with VS Code installed. One-time setup: open VS Code, press **Cmd+Shift+P** to open the Command Palette, type `shell command`, and select **Shell Command: Install 'code' command in PATH**. Then open a **new** terminal window and `code create_balerica_vpc.sh` works.
+- **Windows (Git Bash AND PowerShell):** the VS Code installer adds `code` to your PATH by default, so it usually just works in both shells. If you get `command not found` / `'code' is not recognized`, re-run the installer and tick the **"Add to PATH"** checkbox (it's on the Select Additional Tasks page), then open a new terminal.
+- **Ubuntu:** install VS Code from the [.deb package](https://code.visualstudio.com/download) or with `sudo snap install --classic code` — both put `code` on your PATH automatically.
+- **`code` still not found?** No problem: open VS Code normally (Start menu / Applications / Launchpad), then **File → Open File…** and navigate to `create_balerica_vpc.sh` in the folder where you downloaded it. Same file, same editing.
+
+> **VS Code line-ending check (Windows students especially):** after the file is open, look at the **bottom-right of the VS Code status bar**. It must say **LF**. If it says **CRLF**, click it, choose **LF**, and save — otherwise you are re-creating the Step 3 line-ending problem with every save.
+
+#### The quick alternative: nano
+
+nano is already there in Git Bash, macOS, Ubuntu, and CloudShell — handy on a machine without VS Code (like CloudShell):
+
+```bash
+nano create_balerica_vpc.sh
+```
+
+Edit, then **Ctrl+O**, **Enter** to save and **Ctrl+X** to exit. Do **not** use Windows Notepad — it loves to re-save the file with CRLF line endings and break it.
+
+#### What to actually change once the file is open
+
+The subnet values live in these lines (only touch them with instructor approval, and change nothing else):
+
+| Line | What you see | What it controls |
+|---|---|---|
+| 5 | `PROJECT="${PROJECT:-balerica}"` | The name prefix (`balerica-vpc`, `balerica-public-a`, …) and the state-file name. Change only the `balerica` after the `:-` |
+| 6 | `NETWORK_PREFIX="${NETWORK_PREFIX:-10.20}"` | The first two octets of the VPC and of all nine subnets. Change only the `10.20` after the `:-` — it must stay a valid, approved, non-overlapping private /16 prefix |
+| 7 | `VPC_CIDR="$NETWORK_PREFIX.0.0/16"` | Derived from line 6 automatically — do **not** edit |
+| 33 | `case "$tier" in public) base=0;; private1) base=10;; private2) base=20;; esac` | The tens digit of the third octet per tier (public → .1-.3, private1 → .11-.13, private2 → .21-.23) |
+| 41 | `n=$((n+1)); cidr="$NETWORK_PREFIX.$((base+n)).0/24"` | Where each subnet's /24 is assembled from the pieces above — read it, understand it, do **not** edit it |
+
+The `:-` syntax means "use the environment variable if set, otherwise this default" — which is why Way 1 works without editing anything.
+
+After **any** edit, before running: save, then repeat Step 3 (`bash -n create_balerica_vpc.sh` must stay silent).
 
 ### Step 6 — Run it (once)
 
