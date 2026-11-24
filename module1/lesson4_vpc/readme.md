@@ -8,9 +8,13 @@
 
 > This runbook is about running the **automation script**. If your instructor assigned the manual, command-by-command build, use `VPC_cli_runbook.md` instead — and never run **both** against the same account, or you will create duplicate networks. Background reading: `RFC_1918_Explanation.md` (why 10.20.x.x) and `balerica_vpc_explanation.md` (a line-by-line tour of the script).
 
+> ## ⚠️ YOU MUST TEAR THIS LAB DOWN WHEN THE COURSE IS DONE ⚠️
+>
+> **AWS keeps billing your account for whatever you leave behind. Forgotten labs are the #1 cause of surprise student bills.** This lab comes with a teardown script, `delete_balerica_vpc.sh`, and running it is **part of the lab, not optional**. Keep the VPC only while later labs still need it (Lab 5 Aurora, the ASG lab) — then, when your instructor announces the module is finished, run **Step 8** of this runbook the same day. Put a reminder in your calendar **right now**, before you build anything. You will forget otherwise. Everyone forgets otherwise.
+
 ### What the script builds
 
-One VPC (`10.20.0.0/16`) in us-east-1, one Internet Gateway, three route tables, and nine subnets — and nothing else. No EC2, no database, no NAT. The network resources themselves have no hourly charge.
+One VPC (`10.20.0.0/16`) in us-east-1, one Internet Gateway, three route tables, and nine subnets — and nothing else. No EC2, no database, no NAT. The empty network itself has no hourly charge — but later labs deploy billable resources into it, which is exactly why the teardown in Step 8 is mandatory once the module ends: deleting the network proves nothing billable is left hiding inside it.
 
 | Tier | us-east-1a | us-east-1b | us-east-1c | Internet route? |
 |---|---|---|---|---|
@@ -49,6 +53,12 @@ bash create_balerica_vpc.sh
 cat balerica-network.env
 aws ec2 describe-subnets --filters "Name=vpc-id,Values=YOUR-VPC-ID" \
   --query 'length(Subnets)' --output text   # expect: 9
+
+# LATER — when the instructor says the module is done — tear it all down (Step 8)
+curl -fsSL -o delete_balerica_vpc.sh \
+  https://raw.githubusercontent.com/BalericaAI/SEIR-Foundations/main/module1/lesson4_vpc/delete_balerica_vpc.sh
+bash -n delete_balerica_vpc.sh
+bash delete_balerica_vpc.sh            # asks you to type DELETE vpc-... to confirm
 ```
 
 ### 1b. Commands the script runs for you, in order
@@ -119,6 +129,46 @@ aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPC_ID" \
 ```
 
 After every `create` call the script appends the new resource ID to `balerica-network.env`. If the script stops partway, that file tells you exactly how far it got.
+
+### 1c. Commands the teardown script runs for you, in order
+
+`delete_balerica_vpc.sh` makes **38 AWS CLI calls**: 13 read-only safety checks first, and the 25 deletion calls only after you type the confirmation. It reads its resource IDs from `balerica-network.env` (it parses the file as plain text — it never executes it).
+
+**Read-only verification — nothing is deleted yet (13 calls):**
+
+```bash
+aws sts get-caller-identity --query Account --output text        # must match the VPC's owner
+aws ec2 describe-vpcs --vpc-ids $VPC_ID \
+  --query 'Vpcs[0].[CidrBlock,IsDefault,Tags[?Key==`Name`]|[0].Value,OwnerId]' --output text
+                                 # refuses the default VPC, a wrong CIDR, or someone else's VPC
+# Seven "is the VPC empty?" checks — each must count 0, or the script stops:
+aws ec2 describe-instances ...            # no EC2 instances (running OR stopped)
+aws ec2 describe-network-interfaces ...   # no network interfaces left behind
+aws ec2 describe-nat-gateways ...         # no NAT gateways
+aws ec2 describe-vpc-endpoints ...        # no VPC endpoints
+aws ec2 describe-security-groups ...      # no custom security groups
+aws ec2 describe-network-acls ...         # no custom network ACLs
+aws rds describe-db-subnet-groups ...     # no database subnet groups (Lab 5!)
+# Inventory — every live resource must match an ID recorded in the state file:
+aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VPC_ID" --query 'Subnets[].SubnetId'
+aws ec2 describe-route-tables ...         # run twice: custom route tables, then associations
+aws ec2 describe-internet-gateways --filters "Name=attachment.vpc-id,Values=$VPC_ID" ...
+```
+
+**Then it prints the full inventory and waits for you to type `DELETE vpc-...` — only after that (25 calls):**
+
+```bash
+aws ec2 disassociate-route-table --association-id $ASSOC_ID   # × 9
+aws ec2 delete-subnet --subnet-id $SUBNET_ID                  # × 9
+aws ec2 delete-route-table --route-table-id $RT_ID            # × 3
+aws ec2 detach-internet-gateway --internet-gateway-id $IGW_ID --vpc-id $VPC_ID
+aws ec2 delete-internet-gateway --internet-gateway-id $IGW_ID
+aws ec2 delete-vpc --vpc-id $VPC_ID
+aws ec2 describe-vpcs --filters "Name=vpc-id,Values=$VPC_ID" \
+  --query 'length(Vpcs)' --output text                        # confirms 0 — really gone
+```
+
+Finally it renames the state file to `balerica-network.env.deleted.TIMESTAMP` so the lab cannot be torn down twice by accident.
 
 ---
 
@@ -332,6 +382,79 @@ Expected: the state file lists ~25 `KEY=value` lines (region, CIDR, VPC, IGW, th
 
 **Success check:** count is `9` and the console resource map matches the table at the top of this runbook.
 
+### Step 8 — TEARDOWN (mandatory — this is how you stop being billed)
+
+**Do not skip this step. Do not "do it later."** When your instructor announces that the module is finished (after Lab 5 and the ASG lab are done with this VPC), tear it down the same day. An AWS account is not a junk drawer: whatever you leave in it, AWS keeps billing you for — and later labs put billable resources (EC2, databases, public IPv4 addresses) *inside this VPC*. Deleting the network forces you to notice anything still alive in it, because the teardown script **refuses to run while anything else is still in the VPC**.
+
+The teardown script needs the same environment as the create script: a **Bash 4+** shell (Git Bash, Ubuntu, macOS with Homebrew Bash, WSL, or CloudShell — PowerShell still cannot run it, see Step 0) and it must run **in the same folder as your `balerica-network.env` state file**, because that file tells it exactly which resources are yours to delete.
+
+**8.1 — Download it** (same pattern as Step 2; skip if you cloned the repo — it is already next to the create script):
+
+macOS, Ubuntu, and Git Bash:
+
+```bash
+curl -fsSL -o delete_balerica_vpc.sh \
+  https://raw.githubusercontent.com/BalericaAI/SEIR-Foundations/main/module1/lesson4_vpc/delete_balerica_vpc.sh
+```
+
+Windows PowerShell (download only — run it from Git Bash/WSL/CloudShell):
+
+```powershell
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/BalericaAI/SEIR-Foundations/main/module1/lesson4_vpc/delete_balerica_vpc.sh -OutFile delete_balerica_vpc.sh
+```
+
+Using CloudShell? Upload your `balerica-network.env` there first (Actions → Upload file), or run the teardown from whatever machine still has it.
+
+**8.2 — Check it before running it** (same drill as Step 3 — catches CRLF damage too):
+
+```bash
+bash -n delete_balerica_vpc.sh     # silence = pass
+```
+
+**8.3 — Run it.** From the folder containing both the script and `balerica-network.env`:
+
+```bash
+bash delete_balerica_vpc.sh
+```
+
+macOS Homebrew-Bash users: call it explicitly, as in Step 1 — e.g. `/opt/homebrew/bin/bash delete_balerica_vpc.sh`. (With Apple's Bash 3.2 it fails immediately at `declare -A`, before touching AWS.)
+
+The script verifies everything first, shows you exactly what it found, and then **stops and asks you to type a confirmation**. Expected output (your IDs will differ):
+
+```text
+Account: 111122223333
+Region: us-east-1
+VPC: vpc-0abc1234def567890 (balerica-vpc, 10.20.0.0/16)
+Subnets: subnet-0a1b... subnet-0b2c... (nine IDs)
+Route tables: rtb-0a1b... rtb-0b2c... rtb-0c3d... (three IDs)
+IGW: igw-0abc1234def567890
+Type DELETE vpc-0abc1234def567890 to proceed:
+```
+
+Read the inventory. If it matches what you built, type `DELETE ` followed by **your** VPC ID, exactly as the prompt shows, and press Enter. Typing anything else cancels safely:
+
+```text
+STOP: Cancelled; no resources deleted
+```
+
+After a correct confirmation, the deletions run (about 30–60 seconds) and it ends with:
+
+```text
+VPC deleted and verified. State archived: balerica-network.env.deleted.20261124T212247Z
+```
+
+The state file is renamed, not deleted — that archive is your proof of cleanup (submit it with your homework notes), and it stops an accidental second run.
+
+**8.4 — Verify with your own eyes.** The script already confirmed the VPC is gone, but check the console too: **VPC → Your VPCs** must no longer show `balerica-vpc`. While you are there, glance at **EC2 → Instances** and **Billing** — make sure nothing else is quietly running.
+
+**What if it refuses?** That is the script protecting you, not a bug:
+
+- `Dependencies found: ...` — something is still alive inside the VPC (an EC2 instance — even a *stopped* one — a database subnet group from Lab 5, a NAT gateway, a custom security group…). The message names the check that failed. Delete that resource first (instructor can help), then rerun.
+- `Unrecorded subnet/route table/association ...` — something in the VPC was created outside the lab script, so the script won't touch the VPC. Investigate with your instructor; never delete what you cannot explain.
+- `VPC identity mismatch or default VPC. Chewbacca says NO.` — the state file points at a VPC that isn't the lab's (wrong account, wrong region, renamed VPC, or the default VPC). Stop and check `aws sts get-caller-identity` first.
+
+**Success check:** the `VPC deleted and verified` line appeared, the archived `.deleted.` file exists, and the console shows no `balerica-vpc`.
+
 ---
 
 ## Troubleshooting
@@ -349,6 +472,12 @@ Expected: the state file lists ~25 `KEY=value` lines (region, CIDR, VPC, IGW, th
 | `Named VPC already exists` | A `balerica-vpc` is already in the account (maybe from the manual runbook). One network per account — inspect it, don't duplicate |
 | `UnauthorizedOperation` | Your lab IAM role lacks an EC2 networking permission — show your instructor the exact message; do not grant yourself admin |
 | `AZ us-east-1X unavailable` | Wrong region or restricted account — confirm `AWS_REGION` is us-east-1 and retry `aws ec2 describe-availability-zones` |
+| `STOP: Missing balerica-network.env` (teardown) | You are not in the folder where you ran the create script — `cd` there, or pass the file's path: `bash delete_balerica_vpc.sh /path/to/balerica-network.env` |
+| `STOP: Dependencies found: ...` (teardown) | The VPC is not empty — a (possibly stopped) EC2 instance, DB subnet group, NAT gateway, endpoint, custom SG/NACL is still inside. Remove it first, then rerun (Step 8) |
+| `STOP: Unrecorded subnet ...` (teardown) | The VPC contains resources the lab didn't create — investigate with your instructor before deleting anything |
+| `STOP: Cancelled; no resources deleted` | You didn't type `DELETE vpc-...` exactly as prompted. Nothing happened — rerun when ready |
+| `declare: -A: invalid option` (teardown, macOS) | Bash 3.2 again — nothing was touched; use Homebrew Bash 5 or CloudShell (Step 1) |
+| Teardown ran, but the state file is "gone" | It was archived, not lost — look for `balerica-network.env.deleted.TIMESTAMP` in the same folder |
 
 ## Completion checklist
 
@@ -359,10 +488,17 @@ Expected: the state file lists ~25 `KEY=value` lines (region, CIDR, VPC, IGW, th
 - [ ] Subnet count query returns `9`; console resource map matches the design table.
 - [ ] `balerica-network.env` is kept safe locally and is **not** committed to GitHub.
 - [ ] I did not delete the default VPC, the state file, or anything I cannot explain.
+- [ ] **I have a dated reminder to run the teardown (Step 8) the day the instructor closes the module.**
 
-Keep the VPC and the state file: Lab 5 (Aurora) uses the Private 2 subnet IDs, and the ASG lab uses Private 1. This runbook intentionally includes no deletion commands — cleanup is instructor-led.
+And when the module ends — the part of the lab people fail by forgetting:
 
-> **CHEWBACCA SAYS:** RRRRAAAWWWRRR! "It printed green text" is not evidence. The state file, the subnet count of nine, and the console resource map are evidence.
+- [ ] `bash delete_balerica_vpc.sh` ran, I typed `DELETE vpc-...`, and it ended with `VPC deleted and verified`.
+- [ ] The archived `balerica-network.env.deleted.TIMESTAMP` file exists (keep it as proof of cleanup).
+- [ ] The AWS console shows **no** `balerica-vpc`, and Billing shows nothing unexpected still running.
+
+Keep the VPC and the state file *while the course still needs them*: Lab 5 (Aurora) uses the Private 2 subnet IDs, and the ASG lab uses Private 1. The moment those labs are done, **teardown is mandatory — see Step 8**. The lab is not complete, and your bill is not safe, until the VPC is gone.
+
+> **CHEWBACCA SAYS:** RRRRAAAWWWRRR! "It printed green text" is not evidence. The state file, the subnet count of nine, and the console resource map are evidence. And a lab you never tore down is not finished — it is a subscription you forgot to cancel.
 
 ## Companion documents
 
@@ -370,4 +506,4 @@ Keep the VPC and the state file: Lab 5 (Aurora) uses the Private 2 subnet IDs, a
 - `balerica_vpc_explanation.md` — what every line of the script does and why.
 - `RFC_1918_Explanation.md` — private addressing and the subnet math behind 10.20.
 
-*Instructor note: the Bash syntax check, shellcheck, CRLF failure modes, rerun guards, and full command sequence in this runbook were verified by executing the script against a mocked AWS CLI (52 calls, exit 0, state file as described). Live AWS execution was not performed in this authoring session; AWS-dependent outputs are shaped from the script's commands and documentation.*
+*Instructor note: the Bash syntax checks, shellcheck, CRLF failure modes, rerun/confirmation guards, and full command sequences in this runbook were verified by executing both scripts against a mocked AWS CLI — create: 52 calls, exit 0, state file as described; teardown: 38 calls, exit 0, consuming that same state file and archiving it, with the cancel path making zero destructive calls. Live AWS execution was not performed in this authoring session; AWS-dependent outputs are shaped from the scripts' commands and documentation.*
