@@ -122,7 +122,7 @@ No file is required for the other reading or videos.
 
 **Submission:** `network_architecture_YourNameHere.txt`
 
-You are the network engineer. Start from **Theo's Balerica plan** (Section 4.2) and make it yours: replace the **`20`** in the second octet with a **`1` followed by the last two digits of the year you were born**. The extra `1` keeps your real birth year out of your public repo. Everything this week stays inside the **Class A private range, `10.0.0.0/8`**. (Class B and C private ranges are still fair game in the subnetting practice — Theo's Question 5 — and in the Deep dive, Topic 6.)
+You are the network engineer. Start from **Theo's Balerica plan** (Section 4.2) and make it yours: replace the **`20`** in the second octet with a **`1` followed by the last two digits of the year you were born**. Everything this week stays inside the **Class A private range, `10.0.0.0/8`**. (Class B and C private ranges are still fair game in the subnetting practice — Theo's Question 5 — and in the Deep dive, Topic 6.)
 
 | Born in | Your VPC CIDR | Your Public Subnet A |
 |---------|---------------|----------------------|
