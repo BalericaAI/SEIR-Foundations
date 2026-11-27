@@ -48,7 +48,11 @@ for tier in PUBLIC PRIVATE1 PRIVATE2; do
   done
 done
 live_subnets=$(a ec2 describe-subnets --filters "$filter" --query 'Subnets[].SubnetId' --output text)
-live_tables=$(a ec2 describe-route-tables --filters "$filter" --query 'RouteTables[?!Associations[?Main==`true`]].RouteTableId' --output text)
+# length(...) == 0 selects custom tables: JMESPath cannot negate a filter
+# projection directly, so [?!Associations[?Main==`true`]] silently matched
+# nothing, the custom tables were never deleted, and delete-vpc always
+# failed with DependencyViolation.
+live_tables=$(a ec2 describe-route-tables --filters "$filter" --query 'RouteTables[?length(Associations[?Main==`true`]) == `0`].RouteTableId' --output text)
 live_assoc=$(a ec2 describe-route-tables --filters "$filter" --query 'RouteTables[].Associations[?Main==`false`].RouteTableAssociationId[]' --output text)
 for id in $live_subnets; do contains "$id" "${subnets[@]}" || fail "Unrecorded subnet $id"; done
 for id in $live_tables; do contains "$id" "${tables[@]}" || fail "Unrecorded route table $id"; done
